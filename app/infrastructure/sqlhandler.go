@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/bmf-san/go-clean-architecture-web-application-boilerplate/app/interfaces"
+	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
 // A SQLHandler belong to the infrastructure layer.
@@ -31,12 +32,12 @@ type Row struct {
 // NewSQLHandler returns connection and methos which is related to database handling.
 func NewSQLHandler() (interfaces.SQLHandler, error) {
 	sqlHandler := &SQLHandler{}
-	dataSourceName := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"), os.Getenv("DB_HOST"), os.Getenv("DB_PORT"), os.Getenv("DB_DATABASE"))
-	conn, err := sql.Open(os.Getenv("DB_DRIVER"), dataSourceName)
+	conn, err := sql.Open(os.Getenv("DB_DRIVER"), os.Getenv("DATABASE_URL"))
 	if err != nil {
 		return nil, err
 	}
 	err = conn.Ping()
+	fmt.Println("Connected")
 	if err != nil {
 		return nil, err
 	}
