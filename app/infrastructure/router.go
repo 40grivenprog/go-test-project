@@ -11,15 +11,13 @@ import (
 
 // Dispatch is handle routing
 func Dispatch(logger usecases.Logger, sqlHandler interfaces.SQLHandler) {
-	userController := interfaces.NewUserController(sqlHandler, logger)
-	postController := interfaces.NewPostController(sqlHandler, logger)
+	positionController := interfaces.NewPositionController(sqlHandler, logger)
+
 
 	r := chi.NewRouter()
-	r.Get("/users", userController.Index)
-	r.Get("/user", userController.Show)
-	r.Get("/posts", postController.Index)
-	r.Post("/post", postController.Store)
-	r.Delete("/post", postController.Destroy)
+	r.Get("/positions", positionController.Index)
+	r.Get("/position", positionController.Show)
+	r.Post("/positions", positionController.Store)
 
 	if err := http.ListenAndServe(":"+os.Getenv("SERVER_PORT"), r); err != nil {
 		logger.LogError("%s", err)
