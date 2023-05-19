@@ -24,8 +24,14 @@ func (pi *PositionInteractor) Show(positionID int) (position domain.Position, er
 }
 
 // Show is display the specified resource.
-func (pi *PositionInteractor) Store(p domain.Position) (id int64, err error) {
-	id, err = pi.PositionRepository.Save(p)
+func (pi *PositionInteractor) Store(p domain.Position) (err error) {
+	err = pi.PositionRepository.Save(p)
+
+	return
+}
+
+func (pi *PositionInteractor) Destroy(positionID int) (err error) {
+	err = pi.PositionRepository.DeleteByID(positionID)
 
 	return
 }

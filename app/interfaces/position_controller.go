@@ -7,6 +7,7 @@ import (
 
 	"github.com/bmf-san/go-clean-architecture-web-application-boilerplate/app/domain"
 	"github.com/bmf-san/go-clean-architecture-web-application-boilerplate/app/usecases"
+	"github.com/go-chi/chi"
 )
 
 // A PositionController belong to the interface layer.
@@ -34,7 +35,7 @@ func (pc *PositionController) Index(w http.ResponseWriter, r *http.Request) {
 	positions, err := pc.PositionInteractor.Index()
 
 	if err != nil {
-		handleHttpError(w, pc, err)
+		handleHttpError(w, pc.Logger, err)
 	}
 
 	handleHttpResponse(w, positions)
@@ -47,13 +48,13 @@ func (pc *PositionController) Store(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&p)
 
 	if err != nil {
-		handleHttpError(w, pc, err)
+		handleHttpError(w, pc.Logger, err)
 	}
 
-	_, err = pc.PositionInteractor.Store(p)
+	err = pc.PositionInteractor.Store(p)
 
 	if err != nil {
-		handleHttpError(w, pc, err)
+		handleHttpError(w, pc.Logger, err)
 	}
 
 	http.Redirect(w, r, "/positions", http.StatusSeeOther)
@@ -63,26 +64,27 @@ func (pc *PositionController) Store(w http.ResponseWriter, r *http.Request) {
 func (pc *PositionController) Show(w http.ResponseWriter, r *http.Request) {
 	pc.Logger.LogAccess("%s %s %s\n", r.RemoteAddr, r.Method, r.URL)
 
-	positionID, _ := strconv.Atoi(r.URL.Query().Get("id"))
+	positionID, _ := strconv.Atoi(chi.URLParam(r, "id"))
 
 	position, err := pc.PositionInteractor.Show(positionID)
 
 	if err != nil {
-		handleHttpError(w, pc, err)
+		handleHttpError(w, pc.Logger, err)
 	}
 
 	handleHttpResponse(w, position)
 }
 
-func handleHttpError(w http.ResponseWriter, pc *PositionController, err error) {
-	pc.Logger.LogError("%s", err)
+func (pc *PositionController) Destroy(w http.ResponseWriter, r *http.Request) {
+	pc.Logger.LogAccess("%s %s %s\n", r.RemoteAddr, r.Method, r.URL)
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(500)
-	json.NewEncoder(w).Encode(err)
-}
+	positionID, _ := strconv.Atoi(chi.URLParam(r, "id"))
 
-func handleHttpResponse(w http.ResponseWriter, result interface{}) {
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(result)
+	err := pc.PositionInteractor.Destroy(positionID)
+
+	if err != nil {
+		handleHttpError(w, pc.Logger, err)
+	}
+
+	http.Redirect(w, r, "/positions", http.StatusSeeOther)
 }
