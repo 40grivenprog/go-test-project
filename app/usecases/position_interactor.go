@@ -23,13 +23,14 @@ func (pi *PositionInteractor) Show(positionID int) (position domain.Position, er
 	return
 }
 
-// Show is display the specified resource.
+// Store is store a newly created resource in storage.
 func (pi *PositionInteractor) Store(p domain.Position) (err error) {
 	err = pi.PositionRepository.Save(p)
 
 	return
 }
 
+// Destroy is remove the specified resource from storage.
 func (pi *PositionInteractor) Destroy(positionID int) (err error) {
 	err = pi.PositionRepository.DeleteByID(positionID)
 

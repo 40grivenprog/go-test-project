@@ -6,11 +6,13 @@ import (
 	"github.com/bmf-san/go-clean-architecture-web-application-boilerplate/app/domain"
 )
 
+// An EmployeeRepository belong to the inteface layer
 type EmployeeRepository struct {
 	SQLHandler SQLHandler
 }
 
-func (er *EmployeeRepository) FindAllByPositionID(positionId int) (employees domain.Employees, err error) {
+// FindAllByPositionID returns all entities by position id.
+func (er *EmployeeRepository) FindAllByPositionID(positionID int) (employees domain.Employees, err error) {
 	const query = `
 	SELECT
 		id,
@@ -25,7 +27,7 @@ func (er *EmployeeRepository) FindAllByPositionID(positionId int) (employees dom
 	  position_id = $1
 	`
 
-	rows, err := er.SQLHandler.Query(query, positionId)
+	rows, err := er.SQLHandler.Query(query, positionID)
 
 	if err != nil {
 		return
@@ -37,11 +39,11 @@ func (er *EmployeeRepository) FindAllByPositionID(positionId int) (employees dom
 		var id int
 		var firstName string
 		var lastName string
-		var positionId int
+		var positionID int
 		var updatedAt time.Time
 		var createdAt time.Time
 
-		if err = rows.Scan(&id, &firstName, &lastName, &positionId, &updatedAt, &createdAt); err != nil {
+		if err = rows.Scan(&id, &firstName, &lastName, &positionID, &updatedAt, &createdAt); err != nil {
 			return
 		}
 
@@ -49,7 +51,7 @@ func (er *EmployeeRepository) FindAllByPositionID(positionId int) (employees dom
 			ID:         id,
 			FirstName:  firstName,
 			LastName:   lastName,
-			PositionID: positionId,
+			PositionID: positionID,
 			UpdatedAt:  updatedAt,
 			CreatedAt:  createdAt,
 		}
@@ -64,6 +66,7 @@ func (er *EmployeeRepository) FindAllByPositionID(positionId int) (employees dom
 	return
 }
 
+// FindByID returns the entity identified by the given id.
 func (er *EmployeeRepository) FindByID(employeeID int) (employee domain.Employee, err error) {
 	const query = `
 	SELECT
@@ -88,13 +91,13 @@ func (er *EmployeeRepository) FindByID(employeeID int) (employee domain.Employee
 	var id int
 	var firstName string
 	var lastName string
-	var positionId int
+	var positionID int
 	var updatedAt time.Time
 	var createdAt time.Time
 
 	row.Next()
 
-	if err = row.Scan(&id, &firstName, &lastName, &positionId, &updatedAt, &createdAt); err != nil {
+	if err = row.Scan(&id, &firstName, &lastName, &positionID, &updatedAt, &createdAt); err != nil {
 		return
 	}
 
@@ -102,7 +105,7 @@ func (er *EmployeeRepository) FindByID(employeeID int) (employee domain.Employee
 		ID:         id,
 		FirstName:  firstName,
 		LastName:   lastName,
-		PositionID: positionId,
+		PositionID: positionID,
 		UpdatedAt:  updatedAt,
 		CreatedAt:  createdAt,
 	}
@@ -110,6 +113,7 @@ func (er *EmployeeRepository) FindByID(employeeID int) (employee domain.Employee
 	return
 }
 
+// DeleteByID is deletes the entity identified by the given id.
 func (er *EmployeeRepository) DeleteByID(employeeID int) (err error) {
 	const query = `
 	DELETE
@@ -127,6 +131,7 @@ func (er *EmployeeRepository) DeleteByID(employeeID int) (err error) {
 	return
 }
 
+// Save is saves the given entity
 func (er *EmployeeRepository) Save(employee domain.Employee) (err error) {
 	const query = `
 	INSERT INTO

@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-func handleHttpError(w http.ResponseWriter, logger Logger, err error) {
+func handleHTTPError(w http.ResponseWriter, logger Logger, err error) {
 	logger.LogError("%s", err)
 
 	w.Header().Set("Content-Type", "application/json")
@@ -13,7 +13,7 @@ func handleHttpError(w http.ResponseWriter, logger Logger, err error) {
 	json.NewEncoder(w).Encode(err)
 }
 
-func handleHttpResponse(w http.ResponseWriter, result interface{}) {
+func handleHTTPResponse(w http.ResponseWriter, result interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(result)
 }

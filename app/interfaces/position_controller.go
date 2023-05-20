@@ -35,12 +35,13 @@ func (pc *PositionController) Index(w http.ResponseWriter, r *http.Request) {
 	positions, err := pc.PositionInteractor.Index()
 
 	if err != nil {
-		handleHttpError(w, pc.Logger, err)
+		handleHTTPError(w, pc.Logger, err)
 	}
 
-	handleHttpResponse(w, positions)
+	handleHTTPResponse(w, positions)
 }
 
+// Store is store a newly created resource in storage.
 func (pc *PositionController) Store(w http.ResponseWriter, r *http.Request) {
 	pc.Logger.LogAccess("%s %s %s\n", r.RemoteAddr, r.Method, r.URL)
 
@@ -48,13 +49,13 @@ func (pc *PositionController) Store(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&p)
 
 	if err != nil {
-		handleHttpError(w, pc.Logger, err)
+		handleHTTPError(w, pc.Logger, err)
 	}
 
 	err = pc.PositionInteractor.Store(p)
 
 	if err != nil {
-		handleHttpError(w, pc.Logger, err)
+		handleHTTPError(w, pc.Logger, err)
 	}
 
 	http.Redirect(w, r, "/positions", http.StatusSeeOther)
@@ -69,12 +70,13 @@ func (pc *PositionController) Show(w http.ResponseWriter, r *http.Request) {
 	position, err := pc.PositionInteractor.Show(positionID)
 
 	if err != nil {
-		handleHttpError(w, pc.Logger, err)
+		handleHTTPError(w, pc.Logger, err)
 	}
 
-	handleHttpResponse(w, position)
+	handleHTTPResponse(w, position)
 }
 
+// Destroy is remove the specified resource from storage.
 func (pc *PositionController) Destroy(w http.ResponseWriter, r *http.Request) {
 	pc.Logger.LogAccess("%s %s %s\n", r.RemoteAddr, r.Method, r.URL)
 
@@ -83,7 +85,7 @@ func (pc *PositionController) Destroy(w http.ResponseWriter, r *http.Request) {
 	err := pc.PositionInteractor.Destroy(positionID)
 
 	if err != nil {
-		handleHttpError(w, pc.Logger, err)
+		handleHTTPError(w, pc.Logger, err)
 	}
 
 	http.Redirect(w, r, "/positions", http.StatusSeeOther)

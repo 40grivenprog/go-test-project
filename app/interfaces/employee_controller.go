@@ -28,6 +28,7 @@ func NewEmployeeController(sqlHandler SQLHandler, logger usecases.Logger) *Emplo
 	}
 }
 
+// Index is display a listing of the resource.
 func (ec *EmployeeController) Index(w http.ResponseWriter, r *http.Request) {
 	ec.Logger.LogAccess("%s %s %s\n", r.RemoteAddr, r.Method, r.URL)
 
@@ -36,12 +37,13 @@ func (ec *EmployeeController) Index(w http.ResponseWriter, r *http.Request) {
 	employees, err := ec.EmployeeInteractor.Index(positionID)
 
 	if err != nil {
-		handleHttpError(w, ec.Logger, err)
+		handleHTTPError(w, ec.Logger, err)
 	}
 
-	handleHttpResponse(w, employees)
+	handleHTTPResponse(w, employees)
 }
 
+// Store is stora a newly created resource in storage.
 func (ec *EmployeeController) Store(w http.ResponseWriter, r *http.Request) {
 	ec.Logger.LogAccess("%s %s %s\n", r.RemoteAddr, r.Method, r.URL)
 
@@ -49,18 +51,19 @@ func (ec *EmployeeController) Store(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&employee)
 
 	if err != nil {
-		handleHttpError(w, ec.Logger, err)
+		handleHTTPError(w, ec.Logger, err)
 	}
 
 	err = ec.EmployeeInteractor.Store(employee)
 
 	if err != nil {
-		handleHttpError(w, ec.Logger, err)
+		handleHTTPError(w, ec.Logger, err)
 	}
 
 	http.Redirect(w, r, "/positions", http.StatusSeeOther)
 }
 
+// Show return response which contain the specified resource of a employee
 func (ec *EmployeeController) Show(w http.ResponseWriter, r *http.Request) {
 	ec.Logger.LogAccess("%s %s %s\n", r.RemoteAddr, r.Method, r.URL)
 
@@ -69,12 +72,13 @@ func (ec *EmployeeController) Show(w http.ResponseWriter, r *http.Request) {
 	employee, err := ec.EmployeeInteractor.Show(employeeID)
 
 	if err != nil {
-		handleHttpError(w, ec.Logger, err)
+		handleHTTPError(w, ec.Logger, err)
 	}
 
-	handleHttpResponse(w, employee)
+	handleHTTPResponse(w, employee)
 }
 
+// Destroy is remove the specified resource from storage.
 func (ec *EmployeeController) Destroy(w http.ResponseWriter, r *http.Request) {
 	ec.Logger.LogAccess("%s %s %s\n", r.RemoteAddr, r.Method, r.URL)
 
@@ -83,7 +87,7 @@ func (ec *EmployeeController) Destroy(w http.ResponseWriter, r *http.Request) {
 	err := ec.EmployeeInteractor.Destroy(employeeID)
 
 	if err != nil {
-		handleHttpError(w, ec.Logger, err)
+		handleHTTPError(w, ec.Logger, err)
 	}
 
 	http.Redirect(w, r, "/positions", http.StatusSeeOther)
