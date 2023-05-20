@@ -2,10 +2,10 @@ package domain
 
 import "time"
 
-// A Users belong to the domain layer.
+// An Employees belong to the domain layer.
 type Employees []Employee
 
-// A User belong to the domain layer.
+// A Employee belong to the domain layer.
 type Employee struct {
 	ID         int       `json:"id"`
 	FirstName  string    `json:"first_name"`

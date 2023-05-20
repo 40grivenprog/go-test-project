@@ -103,6 +103,7 @@ func (pr *PositionRepository) FindByID(positionID int) (position domain.Position
 	return
 }
 
+// Save is saves the given entity
 func (pr *PositionRepository) Save(p domain.Position) (err error) {
 	const query = `
 		INSERT INTO

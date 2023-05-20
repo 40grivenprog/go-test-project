@@ -6,7 +6,6 @@ import (
 	"os"
 
 	"github.com/bmf-san/go-clean-architecture-web-application-boilerplate/app/interfaces"
-	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
 // A SQLHandler belong to the infrastructure layer.
