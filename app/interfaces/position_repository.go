@@ -1,6 +1,8 @@
 package interfaces
 
 import (
+	"time"
+
 	"github.com/bmf-san/go-clean-architecture-web-application-boilerplate/app/domain"
 )
 
@@ -15,7 +17,9 @@ func (pr *PositionRepository) FindAll() (positions domain.Positions, err error) 
 		SELECT
 			id,
 			name,
-			salary
+			salary,
+			updated_at,
+			created_at
 		FROM
 			positions
 	`
@@ -31,13 +35,17 @@ func (pr *PositionRepository) FindAll() (positions domain.Positions, err error) 
 		var id int
 		var name string
 		var salary int
-		if err = rows.Scan(&id, &name, &salary); err != nil {
+		var updatedAt time.Time
+		var createdAt time.Time
+		if err = rows.Scan(&id, &name, &salary, &updatedAt, &createdAt); err != nil {
 			return
 		}
 		position := domain.Position{
-			ID:     id,
-			Name:   name,
-			Salary: salary,
+			ID:        id,
+			Name:      name,
+			Salary:    salary,
+			UpdatedAt: updatedAt,
+			CreatedAt: createdAt,
 		}
 		positions = append(positions, position)
 	}
@@ -55,7 +63,9 @@ func (pr *PositionRepository) FindByID(positionID int) (position domain.Position
 		SELECT
 			id,
 			name,
-			salary
+			salary,
+			updated_at,
+			created_at
 		FROM
 			positions
 		WHERE
@@ -73,23 +83,27 @@ func (pr *PositionRepository) FindByID(positionID int) (position domain.Position
 	var id int
 	var name string
 	var salary int
-	
+	var updatedAt time.Time
+	var createdAt time.Time
+
 	row.Next()
 
-	if err = row.Scan(&id, &name, &salary); err != nil {
+	if err = row.Scan(&id, &name, &salary, &updatedAt, &createdAt); err != nil {
 		return
 	}
 
 	position = domain.Position{
-		ID:     id,
-		Name:   name,
-		Salary: salary,
+		ID:        id,
+		Name:      name,
+		Salary:    salary,
+		UpdatedAt: updatedAt,
+		CreatedAt: createdAt,
 	}
 
 	return
 }
 
-func (pr *PositionRepository) Save(p domain.Position) (id int64, err error) {
+func (pr *PositionRepository) Save(p domain.Position) (err error) {
 	const query = `
 		INSERT INTO
 				positions(name, salary)
@@ -97,16 +111,29 @@ func (pr *PositionRepository) Save(p domain.Position) (id int64, err error) {
 				($1, $2)
 	`
 
-	result, err := pr.SQLHandler.Exec(query, p.Name, p.Salary)
+	_, err = pr.SQLHandler.Exec(query, p.Name, p.Salary)
 
 	if err != nil {
 		return
 	}
-	
-	id, err = result.LastInsertId()
+
+	return
+}
+
+// DeleteByID is deletes the entity identified by the given id.
+func (pr *PositionRepository) DeleteByID(positionID int) (err error) {
+	const query = `
+		DELETE
+		FROM
+			positions
+		WHERE
+			id = $1
+	`
+
+	_, err = pr.SQLHandler.Exec(query, positionID)
 
 	if err != nil {
-		return id, nil
+		return
 	}
 
 	return

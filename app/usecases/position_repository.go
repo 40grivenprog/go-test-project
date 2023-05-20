@@ -8,5 +8,6 @@ import (
 type PositionRepository interface {
 	FindAll() (domain.Positions, error)
 	FindByID(int) (domain.Position, error)
-	Save(domain.Position) (int64, error)
+	Save(domain.Position) error
+	DeleteByID(int) error
 }
