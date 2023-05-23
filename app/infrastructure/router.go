@@ -15,6 +15,7 @@ func Dispatch(logger usecases.Logger, sqlHandler interfaces.SQLHandler) {
 	employeesController := interfaces.NewEmployeeController(sqlHandler, logger)
 
 	r := gin.Default()
+	r.Use(CorrelationIDGenerator())
 
 	r.GET("/positions", positionController.Index)
 	r.GET("/positions/:id", positionController.Show)
