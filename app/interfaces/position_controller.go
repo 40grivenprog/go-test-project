@@ -1,13 +1,12 @@
 package interfaces
 
 import (
-	"encoding/json"
 	"net/http"
 	"strconv"
 
 	"github.com/bmf-san/go-clean-architecture-web-application-boilerplate/app/domain"
 	"github.com/bmf-san/go-clean-architecture-web-application-boilerplate/app/usecases"
-	"github.com/go-chi/chi"
+	"github.com/gin-gonic/gin"
 )
 
 // A PositionController belong to the interface layer.
@@ -29,64 +28,56 @@ func NewPositionController(sqlHandler SQLHandler, logger usecases.Logger) *Posit
 }
 
 // Index return response which contain a listing of the resource of Positions.
-func (pc *PositionController) Index(w http.ResponseWriter, r *http.Request) {
-	pc.Logger.LogAccess("%s %s %s\n", r.RemoteAddr, r.Method, r.URL)
-
+func (pc *PositionController) Index(c *gin.Context) {
 	positions, err := pc.PositionInteractor.Index()
 
 	if err != nil {
-		handleHTTPError(w, pc.Logger, err)
+		c.IndentedJSON(http.StatusNotFound, err)
 	}
 
-	handleHTTPResponse(w, positions)
+	c.IndentedJSON(http.StatusOK, positions)
 }
 
 // Store is store a newly created resource in storage.
-func (pc *PositionController) Store(w http.ResponseWriter, r *http.Request) {
-	pc.Logger.LogAccess("%s %s %s\n", r.RemoteAddr, r.Method, r.URL)
-
+func (pc *PositionController) Store(c *gin.Context) {
 	p := domain.Position{}
-	err := json.NewDecoder(r.Body).Decode(&p)
 
-	if err != nil {
-		handleHTTPError(w, pc.Logger, err)
+	if err := c.BindJSON(&p); err != nil {
+		c.IndentedJSON(http.StatusNotFound, err)
 	}
 
-	err = pc.PositionInteractor.Store(p)
+	err := pc.PositionInteractor.Store(p)
 
 	if err != nil {
-		handleHTTPError(w, pc.Logger, err)
+		c.IndentedJSON(http.StatusNotFound, err)
 	}
 
-	http.Redirect(w, r, "/positions", http.StatusSeeOther)
+	c.Redirect(http.StatusSeeOther, "/positions")
 }
 
 // Show return response which contain the specified resource of a Position.
-func (pc *PositionController) Show(w http.ResponseWriter, r *http.Request) {
-	pc.Logger.LogAccess("%s %s %s\n", r.RemoteAddr, r.Method, r.URL)
+func (pc *PositionController) Show(c *gin.Context) {
 
-	positionID, _ := strconv.Atoi(chi.URLParam(r, "id"))
+	positionID, _ := strconv.Atoi(c.Param("id"))
 
 	position, err := pc.PositionInteractor.Show(positionID)
 
 	if err != nil {
-		handleHTTPError(w, pc.Logger, err)
+		c.IndentedJSON(http.StatusNotFound, err)
 	}
 
-	handleHTTPResponse(w, position)
+	c.IndentedJSON(http.StatusOK, position)
 }
 
 // Destroy is remove the specified resource from storage.
-func (pc *PositionController) Destroy(w http.ResponseWriter, r *http.Request) {
-	pc.Logger.LogAccess("%s %s %s\n", r.RemoteAddr, r.Method, r.URL)
-
-	positionID, _ := strconv.Atoi(chi.URLParam(r, "id"))
+func (pc *PositionController) Destroy(c *gin.Context) {
+	positionID, _ := strconv.Atoi(c.Param("id"))
 
 	err := pc.PositionInteractor.Destroy(positionID)
 
 	if err != nil {
-		handleHTTPError(w, pc.Logger, err)
+		c.IndentedJSON(http.StatusNotFound, err)
 	}
 
-	http.Redirect(w, r, "/positions", http.StatusSeeOther)
+	c.Redirect(http.StatusSeeOther, "/positions")
 }

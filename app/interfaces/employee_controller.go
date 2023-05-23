@@ -1,13 +1,12 @@
 package interfaces
 
 import (
-	"encoding/json"
 	"net/http"
 	"strconv"
 
 	"github.com/bmf-san/go-clean-architecture-web-application-boilerplate/app/domain"
 	"github.com/bmf-san/go-clean-architecture-web-application-boilerplate/app/usecases"
-	"github.com/go-chi/chi"
+	"github.com/gin-gonic/gin"
 )
 
 // A EmployeeController belong to the interface layer.
@@ -29,66 +28,58 @@ func NewEmployeeController(sqlHandler SQLHandler, logger usecases.Logger) *Emplo
 }
 
 // Index is display a listing of the resource.
-func (ec *EmployeeController) Index(w http.ResponseWriter, r *http.Request) {
-	ec.Logger.LogAccess("%s %s %s\n", r.RemoteAddr, r.Method, r.URL)
-
-	positionID, _ := strconv.Atoi(chi.URLParam(r, "position_id"))
+func (ec *EmployeeController) Index(c *gin.Context) {
+	positionID, _ := strconv.Atoi(c.Param("position_id"))
 
 	employees, err := ec.EmployeeInteractor.Index(positionID)
 
 	if err != nil {
-		handleHTTPError(w, ec.Logger, err)
+		c.IndentedJSON(http.StatusNotFound, err)
 	}
 
-	handleHTTPResponse(w, employees)
+	c.IndentedJSON(http.StatusOK, employees)
 }
 
 // Store is stora a newly created resource in storage.
-func (ec *EmployeeController) Store(w http.ResponseWriter, r *http.Request) {
-	ec.Logger.LogAccess("%s %s %s\n", r.RemoteAddr, r.Method, r.URL)
-
+func (ec *EmployeeController) Store(c *gin.Context) {
 	employee := domain.Employee{}
-	err := json.NewDecoder(r.Body).Decode(&employee)
 
-	if err != nil {
-		handleHTTPError(w, ec.Logger, err)
+	if err := c.BindJSON(&employee); err != nil {
+		c.IndentedJSON(http.StatusNotFound, err)
 	}
 
-	err = ec.EmployeeInteractor.Store(employee)
+	err := ec.EmployeeInteractor.Store(employee)
 
 	if err != nil {
-		handleHTTPError(w, ec.Logger, err)
+		c.IndentedJSON(http.StatusNotFound, err)
 	}
 
-	http.Redirect(w, r, "/positions", http.StatusSeeOther)
+	c.Redirect(http.StatusSeeOther, "/positions")
 }
 
 // Show return response which contain the specified resource of a employee
-func (ec *EmployeeController) Show(w http.ResponseWriter, r *http.Request) {
-	ec.Logger.LogAccess("%s %s %s\n", r.RemoteAddr, r.Method, r.URL)
+func (ec *EmployeeController) Show(c *gin.Context) {
 
-	employeeID, _ := strconv.Atoi(chi.URLParam(r, "id"))
+	employeeID, _ := strconv.Atoi(c.Param("id"))
 
 	employee, err := ec.EmployeeInteractor.Show(employeeID)
 
 	if err != nil {
-		handleHTTPError(w, ec.Logger, err)
+		c.IndentedJSON(http.StatusNotFound, err)
 	}
 
-	handleHTTPResponse(w, employee)
+	c.IndentedJSON(http.StatusOK, employee)
 }
 
 // Destroy is remove the specified resource from storage.
-func (ec *EmployeeController) Destroy(w http.ResponseWriter, r *http.Request) {
-	ec.Logger.LogAccess("%s %s %s\n", r.RemoteAddr, r.Method, r.URL)
-
-	employeeID, _ := strconv.Atoi(chi.URLParam(r, "id"))
+func (ec *EmployeeController) Destroy(c *gin.Context) {
+	employeeID, _ := strconv.Atoi(c.Param("id"))
 
 	err := ec.EmployeeInteractor.Destroy(employeeID)
 
 	if err != nil {
-		handleHTTPError(w, ec.Logger, err)
+		c.IndentedJSON(http.StatusNotFound, err)
 	}
 
-	http.Redirect(w, r, "/positions", http.StatusSeeOther)
+	c.Redirect(http.StatusSeeOther, "/positions")
 }

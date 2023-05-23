@@ -1,12 +1,12 @@
 package infrastructure
 
 import (
-	"net/http"
+	"fmt"
 	"os"
 
 	"github.com/bmf-san/go-clean-architecture-web-application-boilerplate/app/interfaces"
 	"github.com/bmf-san/go-clean-architecture-web-application-boilerplate/app/usecases"
-	"github.com/go-chi/chi"
+	"github.com/gin-gonic/gin"
 )
 
 // Dispatch is handle routing
@@ -14,19 +14,17 @@ func Dispatch(logger usecases.Logger, sqlHandler interfaces.SQLHandler) {
 	positionController := interfaces.NewPositionController(sqlHandler, logger)
 	employeesController := interfaces.NewEmployeeController(sqlHandler, logger)
 
-	r := chi.NewRouter()
+	r := gin.Default()
 
-	r.Get("/positions", positionController.Index)
-	r.Get("/positions/{id}", positionController.Show)
-	r.Post("/positions", positionController.Store)
-	r.Delete("/positions/{id}", positionController.Destroy)
+	r.GET("/positions", positionController.Index)
+	r.GET("/positions/:id", positionController.Show)
+	r.POST("/positions", positionController.Store)
+	r.DELETE("/positions/:id", positionController.Destroy)
 
-	r.Get("/positions/{position_id}/employees", employeesController.Index)
-	r.Get("/employees/{id}", employeesController.Show)
-	r.Post("/employees", employeesController.Store)
-	r.Delete("/employees/{id}", employeesController.Destroy)
+	r.GET("/position/:position_id/employees", employeesController.Index)
+	r.GET("/employees/:id", employeesController.Show)
+	r.POST("/employees", employeesController.Store)
+	r.DELETE("/employees/:id", employeesController.Destroy)
 
-	if err := http.ListenAndServe(":"+os.Getenv("SERVER_PORT"), r); err != nil {
-		logger.LogError("%s", err)
-	}
+	r.Run(fmt.Sprintf("%s:%s", os.Getenv("SERVER_HOST"), os.Getenv("SERVER_PORT")))
 }
