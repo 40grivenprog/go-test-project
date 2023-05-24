@@ -28,13 +28,14 @@ func NewEmployeeController(sqlHandler SQLHandler, logger usecases.Logger) *Emplo
 }
 
 // Index is display a listing of the resource.
-func (ec *EmployeeController) Index(c *gin.Context) {
+func (ec *EmployeeController) Index(c *gin.Context)  {
 	positionID, _ := strconv.Atoi(c.Param("position_id"))
 
 	employees, err := ec.EmployeeInteractor.Index(positionID)
 
 	if err != nil {
-		c.IndentedJSON(http.StatusNotFound, err)
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
 	}
 
 	c.IndentedJSON(http.StatusOK, employees)
@@ -45,13 +46,15 @@ func (ec *EmployeeController) Store(c *gin.Context) {
 	employee := domain.Employee{}
 
 	if err := c.BindJSON(&employee); err != nil {
-		c.IndentedJSON(http.StatusNotFound, err)
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
 	}
 
 	err := ec.EmployeeInteractor.Store(employee)
 
 	if err != nil {
-		c.IndentedJSON(http.StatusNotFound, err)
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
 	}
 
 	c.Redirect(http.StatusSeeOther, "/positions")
@@ -65,7 +68,8 @@ func (ec *EmployeeController) Show(c *gin.Context) {
 	employee, err := ec.EmployeeInteractor.Show(employeeID)
 
 	if err != nil {
-		c.IndentedJSON(http.StatusNotFound, err)
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
 	}
 
 	c.IndentedJSON(http.StatusOK, employee)
@@ -78,7 +82,8 @@ func (ec *EmployeeController) Destroy(c *gin.Context) {
 	err := ec.EmployeeInteractor.Destroy(employeeID)
 
 	if err != nil {
-		c.IndentedJSON(http.StatusNotFound, err)
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
 	}
 
 	c.Redirect(http.StatusSeeOther, "/positions")

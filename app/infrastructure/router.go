@@ -16,6 +16,7 @@ func Dispatch(logger usecases.Logger, sqlHandler interfaces.SQLHandler) {
 
 	r := gin.Default()
 	r.Use(CorrelationIDGenerator())
+	r.Use(ErrorHandler(logger))
 
 	r.GET("/positions", positionController.Index)
 	r.GET("/positions/:id", positionController.Show)

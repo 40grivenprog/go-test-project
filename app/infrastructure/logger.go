@@ -1,9 +1,11 @@
 package infrastructure
 
 import (
+	"fmt"
 	"io"
 	"log"
 	"os"
+	"runtime/debug"
 
 	"github.com/bmf-san/go-clean-architecture-web-application-boilerplate/app/usecases"
 )
@@ -27,7 +29,9 @@ func (l *Logger) LogError(format string, v ...interface{}) {
 	log.SetOutput(io.MultiWriter(file, os.Stdout))
 	log.SetFlags(log.Ldate | log.Ltime)
 
-	log.Printf(format, v...)
+	trace := fmt.Sprintf("%s\n%s", format, debug.Stack())
+
+	log.Printf(trace, v...)
 }
 
 // LogAccess is print messages to log.
