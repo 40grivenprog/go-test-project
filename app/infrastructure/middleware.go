@@ -4,6 +4,7 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 
+	"github.com/bmf-san/go-clean-architecture-web-application-boilerplate/app/usecases"
 	"github.com/gin-gonic/gin"
 )
 
@@ -25,5 +26,16 @@ func CorrelationIDGenerator() gin.HandlerFunc {
 		c.Request.URL.RawQuery = queryParams.Encode()
 
 		c.Next()
+	}
+}
+
+// ErrorHandler is middleware for error handling
+func ErrorHandler(logger usecases.Logger) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Next()
+
+		for _, ginErr := range c.Errors {
+			logger.LogError(ginErr.Error())
+		}
 	}
 }

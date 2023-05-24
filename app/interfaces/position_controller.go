@@ -32,7 +32,8 @@ func (pc *PositionController) Index(c *gin.Context) {
 	positions, err := pc.PositionInteractor.Index()
 
 	if err != nil {
-		c.IndentedJSON(http.StatusNotFound, err)
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
 	}
 
 	c.IndentedJSON(http.StatusOK, positions)
@@ -43,13 +44,15 @@ func (pc *PositionController) Store(c *gin.Context) {
 	p := domain.Position{}
 
 	if err := c.BindJSON(&p); err != nil {
-		c.IndentedJSON(http.StatusNotFound, err)
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
 	}
 
 	err := pc.PositionInteractor.Store(p)
 
 	if err != nil {
-		c.IndentedJSON(http.StatusNotFound, err)
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
 	}
 
 	c.Redirect(http.StatusSeeOther, "/positions")
@@ -58,12 +61,18 @@ func (pc *PositionController) Store(c *gin.Context) {
 // Show return response which contain the specified resource of a Position.
 func (pc *PositionController) Show(c *gin.Context) {
 
-	positionID, _ := strconv.Atoi(c.Param("id"))
+	positionID, err := strconv.Atoi(c.Param("id"))
+
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
 
 	position, err := pc.PositionInteractor.Show(positionID)
 
 	if err != nil {
-		c.IndentedJSON(http.StatusNotFound, err)
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
 	}
 
 	c.IndentedJSON(http.StatusOK, position)
@@ -76,7 +85,8 @@ func (pc *PositionController) Destroy(c *gin.Context) {
 	err := pc.PositionInteractor.Destroy(positionID)
 
 	if err != nil {
-		c.IndentedJSON(http.StatusNotFound, err)
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
 	}
 
 	c.Redirect(http.StatusSeeOther, "/positions")
