@@ -16,19 +16,26 @@ type EmployeeController struct {
 }
 
 // NewEmployeeController returns the resource of Employees.
-func NewEmployeeController(sqlHandler SQLHandler, logger usecases.Logger) *EmployeeController {
+func NewEmployeeController(dbHandler interface{}, logger usecases.Logger) *EmployeeController {
+	var employeeRepository EmployeeRepository
+	sqlHandler, ok := dbHandler.(SQLHandler)
+
+	if ok {
+		employeeRepository = &EmployeePgRepository{
+			SQLHandler: sqlHandler,
+		}
+	}
+
 	return &EmployeeController{
 		EmployeeInteractor: usecases.EmployeeInteractor{
-			EmployeeRepository: &EmployeeRepository{
-				SQLHandler: sqlHandler,
-			},
+			EmployeeRepository: employeeRepository,
 		},
 		Logger: logger,
 	}
 }
 
 // Index is display a listing of the resource.
-func (ec *EmployeeController) Index(c *gin.Context)  {
+func (ec *EmployeeController) Index(c *gin.Context) {
 	positionID, _ := strconv.Atoi(c.Param("position_id"))
 
 	employees, err := ec.EmployeeInteractor.Index(positionID)

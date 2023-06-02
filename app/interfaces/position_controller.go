@@ -16,12 +16,19 @@ type PositionController struct {
 }
 
 // NewPositionController returns the resource of Positions.
-func NewPositionController(sqlHandler SQLHandler, logger usecases.Logger) *PositionController {
+func NewPositionController(dbHandler interface{}, logger usecases.Logger) *PositionController {
+	var positionRepository PositionRepository
+	sqlHandler, ok := dbHandler.(SQLHandler)
+
+	if ok {
+		positionRepository = &PositionPgRepository{
+			SQLHandler: sqlHandler,
+		}
+	}
+
 	return &PositionController{
 		PositionInteractor: usecases.PositionInteractor{
-			PositionRepository: &PositionRepository{
-				SQLHandler: sqlHandler,
-			},
+			PositionRepository: positionRepository,
 		},
 		Logger: logger,
 	}
