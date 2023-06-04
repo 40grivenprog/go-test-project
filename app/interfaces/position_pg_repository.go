@@ -63,7 +63,7 @@ func (pr *PositionPgRepository) FindByID(positionID string) (position domain.Pos
 	positionIDint, err := strconv.Atoi(positionID)
 
 	if err != nil {
-		return position, err
+		return position, NewBadRequestError("position id", positionID)
 	}
 
 	const query = `
@@ -87,13 +87,16 @@ func (pr *PositionPgRepository) FindByID(positionID string) (position domain.Pos
 
 	defer row.Close()
 
+	if !row.Next() {
+		err = NewRecordNotFoundError(positionID)
+		return
+	}
+
 	var id int
 	var name string
 	var salary int
 	var updatedAt time.Time
 	var createdAt time.Time
-
-	row.Next()
 
 	if err = row.Scan(&id, &name, &salary, &updatedAt, &createdAt); err != nil {
 		return
@@ -133,7 +136,7 @@ func (pr *PositionPgRepository) DeleteByID(positionID string) (err error) {
 	positionIDint, err := strconv.Atoi(positionID)
 
 	if err != nil {
-		return
+		return NewBadRequestError("position id", positionID)
 	}
 
 	const query = `
@@ -144,10 +147,10 @@ func (pr *PositionPgRepository) DeleteByID(positionID string) (err error) {
 			id = $1
 	`
 
-	_, err = pr.SQLHandler.Exec(query, positionIDint)
+	result, err := pr.SQLHandler.Exec(query, positionIDint)
 
-	if err != nil {
-		return
+	if rowsAffected, err := result.RowsAffected(); rowsAffected == 0 || err != nil {
+		return NewRecordNotFoundError(positionID)
 	}
 
 	return

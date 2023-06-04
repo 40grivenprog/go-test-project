@@ -68,16 +68,16 @@ func (pc *PositionController) Store(c *gin.Context) {
 	c.Redirect(http.StatusSeeOther, "/positions")
 }
 
-// Show return response which contain the specified resource of a Position.
+// Show returns the response containing the specified resource of a Position.
 func (pc *PositionController) Show(c *gin.Context) {
 	position, err := pc.PositionInteractor.Show(c.Param("id"))
 
 	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
+		c.AbortWithError(CalculateResponseErrorStatus(err), err)
 		return
 	}
 
-	c.IndentedJSON(http.StatusOK, position)
+	c.JSON(http.StatusOK, position)
 }
 
 // Destroy is remove the specified resource from storage.
@@ -85,7 +85,7 @@ func (pc *PositionController) Destroy(c *gin.Context) {
 	err := pc.PositionInteractor.Destroy(c.Param("id"))
 
 	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
+		c.AbortWithError(CalculateResponseErrorStatus(err), err)
 		return
 	}
 

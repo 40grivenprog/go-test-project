@@ -9,7 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-const positions_collection string = "positions"
+const positionsCollection string = "positions"
 
 // A PositionMongoRepository belong to the inteface layer
 type PositionMongoRepository struct {
@@ -18,7 +18,7 @@ type PositionMongoRepository struct {
 
 // FindAll is returns the number of entities.
 func (pr *PositionMongoRepository) FindAll() (positions domain.Positions, err error) {
-	positionsCollection := pr.MongoDBHandler.Collection(positions_collection)
+	positionsCollection := pr.MongoDBHandler.Collection(positionsCollection)
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 	cursor, err := positionsCollection.Find(context.TODO(), bson.M{})
 
@@ -37,22 +37,26 @@ func (pr *PositionMongoRepository) FindAll() (positions domain.Positions, err er
 
 // FindByID returns the entity identified by the given id.
 func (pr *PositionMongoRepository) FindByID(positionID string) (position domain.Position, err error) {
-	objectID, err := primitive.ObjectIDFromHex(positionID)
+	positionIDHex, err := primitive.ObjectIDFromHex(positionID)
 
 	if err != nil {
+		err = NewBadRequestError("position id", positionID)
 		return
 	}
 
-	result := pr.MongoDBHandler.Collection(positions_collection).FindOne(context.Background(), bson.M{"_id": objectID})
+	result := pr.MongoDBHandler.Collection(positionsCollection).FindOne(context.Background(), bson.M{"_id": positionIDHex})
 
-	result.Decode(&position)
+	if err = result.Decode(&position); err != nil {
+		err = NewRecordNotFoundError(positionIDHex)
+		return
+	}
 
 	return
 }
 
 // Save is saves the given entity
 func (pr *PositionMongoRepository) Save(p domain.Position) (err error) {
-	positionsCollection := pr.MongoDBHandler.Collection(positions_collection)
+	positionsCollection := pr.MongoDBHandler.Collection(positionsCollection)
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 	currentTimestamp := time.Now()
 
@@ -72,15 +76,21 @@ func (pr *PositionMongoRepository) Save(p domain.Position) (err error) {
 
 // DeleteByID is deletes the entity identified by the given id.
 func (pr *PositionMongoRepository) DeleteByID(positionID string) (err error) {
-	objectID, err := primitive.ObjectIDFromHex(positionID)
+	positionIDHex, err := primitive.ObjectIDFromHex(positionID)
+
+	if err != nil {
+		err = NewBadRequestError("position id", positionID)
+		return
+	}
+
+	result, err := pr.MongoDBHandler.Collection(positionsCollection).DeleteOne(context.Background(), bson.M{"_id": positionIDHex})
 
 	if err != nil {
 		return
 	}
 
-	_, err = pr.MongoDBHandler.Collection(positions_collection).DeleteOne(context.Background(), bson.M{"_id": objectID})
-
-	if err != nil {
+	if result.DeletedCount == 0 {
+		err = NewRecordNotFoundError(positionIDHex)
 		return
 	}
 

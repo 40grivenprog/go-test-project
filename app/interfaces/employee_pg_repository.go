@@ -17,7 +17,8 @@ func (er *EmployeePgRepository) FindAllByPositionID(positionID string) (employee
 	positionIDInt, err := strconv.Atoi(positionID)
 
 	if err != nil {
-		return employees, err
+		err = NewBadRequestError("position id", positionID)
+		return
 	}
 
 	const query = `
@@ -37,6 +38,11 @@ func (er *EmployeePgRepository) FindAllByPositionID(positionID string) (employee
 	rows, err := er.SQLHandler.Query(query, positionIDInt)
 
 	if err != nil {
+		return
+	}
+
+	if !rows.Next() {
+		err = NewRecordNotFoundError(positionID)
 		return
 	}
 
@@ -78,7 +84,8 @@ func (er *EmployeePgRepository) FindByID(employeeID string) (employee domain.Emp
 	employeeIDInt, err := strconv.Atoi(employeeID)
 
 	if err != nil {
-		return employee, err
+		err = NewBadRequestError("employee id", employeeID)
+		return
 	}
 
 	const query = `
@@ -99,6 +106,11 @@ func (er *EmployeePgRepository) FindByID(employeeID string) (employee domain.Emp
 		return
 	}
 
+	if !row.Next() {
+		err = NewRecordNotFoundError(employeeID)
+		return
+	}
+
 	defer row.Close()
 
 	var id int
@@ -107,8 +119,6 @@ func (er *EmployeePgRepository) FindByID(employeeID string) (employee domain.Emp
 	var positionID int
 	var updatedAt time.Time
 	var createdAt time.Time
-
-	row.Next()
 
 	if err = row.Scan(&id, &firstName, &lastName, &positionID, &updatedAt, &createdAt); err != nil {
 		return
@@ -131,7 +141,8 @@ func (er *EmployeePgRepository) DeleteByID(employeeID string) (err error) {
 	employeeIDInt, err := strconv.Atoi(employeeID)
 
 	if err != nil {
-		return err
+		err = NewBadRequestError("employee id", employeeID)
+		return
 	}
 
 	const query = `
@@ -141,10 +152,10 @@ func (er *EmployeePgRepository) DeleteByID(employeeID string) (err error) {
 	WHERE
 	  id = $1
 	`
-	_, err = er.SQLHandler.Exec(query, employeeIDInt)
+	result, err := er.SQLHandler.Exec(query, employeeIDInt)
 
-	if err != nil {
-		return
+	if rowsAffected, err := result.RowsAffected(); rowsAffected == 0 || err != nil {
+		return NewRecordNotFoundError(employeeID)
 	}
 
 	return

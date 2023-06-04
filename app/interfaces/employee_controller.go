@@ -44,7 +44,7 @@ func (ec *EmployeeController) Index(c *gin.Context) {
 	employees, err := ec.EmployeeInteractor.Index(c.Param("position_id"))
 
 	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
+		c.AbortWithError(CalculateResponseErrorStatus(err), err)
 		return
 	}
 
@@ -56,14 +56,14 @@ func (ec *EmployeeController) Store(c *gin.Context) {
 	employee := domain.Employee{}
 
 	if err := c.BindJSON(&employee); err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
+		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 
 	err := ec.EmployeeInteractor.Store(employee)
 
 	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
+		c.AbortWithError(CalculateResponseErrorStatus(err), err)
 		return
 	}
 
@@ -75,7 +75,7 @@ func (ec *EmployeeController) Show(c *gin.Context) {
 	employee, err := ec.EmployeeInteractor.Show(c.Param("id"))
 
 	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
+		c.AbortWithError(CalculateResponseErrorStatus(err), err)
 		return
 	}
 
@@ -87,7 +87,7 @@ func (ec *EmployeeController) Destroy(c *gin.Context) {
 	err := ec.EmployeeInteractor.Destroy(c.Param("id"))
 
 	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
+		c.AbortWithError(CalculateResponseErrorStatus(err), err)
 		return
 	}
 
