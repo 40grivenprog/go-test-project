@@ -2,7 +2,6 @@ package interfaces
 
 import (
 	"net/http"
-	"strconv"
 
 	"github.com/bmf-san/go-clean-architecture-web-application-boilerplate/app/domain"
 	"github.com/bmf-san/go-clean-architecture-web-application-boilerplate/app/usecases"
@@ -18,11 +17,16 @@ type PositionController struct {
 // NewPositionController returns the resource of Positions.
 func NewPositionController(dbHandler interface{}, logger usecases.Logger) *PositionController {
 	var positionRepository PositionRepository
-	sqlHandler, ok := dbHandler.(SQLHandler)
-
-	if ok {
+	switch dbHandler.(type) {
+	case SQLHandler:
+		sqlHandler, _ := dbHandler.(SQLHandler)
 		positionRepository = &PositionPgRepository{
 			SQLHandler: sqlHandler,
+		}
+	case MongoDBHandler:
+		mongoDbHandler, _ := dbHandler.(MongoDBHandler)
+		positionRepository = &PositionMongoRepository{
+			MongoDBHandler: mongoDbHandler,
 		}
 	}
 
@@ -54,7 +58,6 @@ func (pc *PositionController) Store(c *gin.Context) {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
-
 	err := pc.PositionInteractor.Store(p)
 
 	if err != nil {
@@ -67,15 +70,7 @@ func (pc *PositionController) Store(c *gin.Context) {
 
 // Show return response which contain the specified resource of a Position.
 func (pc *PositionController) Show(c *gin.Context) {
-
-	positionID, err := strconv.Atoi(c.Param("id"))
-
-	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
-		return
-	}
-
-	position, err := pc.PositionInteractor.Show(positionID)
+	position, err := pc.PositionInteractor.Show(c.Param("id"))
 
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
@@ -87,9 +82,7 @@ func (pc *PositionController) Show(c *gin.Context) {
 
 // Destroy is remove the specified resource from storage.
 func (pc *PositionController) Destroy(c *gin.Context) {
-	positionID, _ := strconv.Atoi(c.Param("id"))
-
-	err := pc.PositionInteractor.Destroy(positionID)
+	err := pc.PositionInteractor.Destroy(c.Param("id"))
 
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)

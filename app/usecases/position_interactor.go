@@ -17,7 +17,7 @@ func (pi *PositionInteractor) Index() (positions domain.Positions, err error) {
 }
 
 // Show is display the specified resource.
-func (pi *PositionInteractor) Show(positionID int) (position domain.Position, err error) {
+func (pi *PositionInteractor) Show(positionID string) (position domain.Position, err error) {
 	position, err = pi.PositionRepository.FindByID(positionID)
 
 	return
@@ -31,7 +31,7 @@ func (pi *PositionInteractor) Store(p domain.Position) (err error) {
 }
 
 // Destroy is remove the specified resource from storage.
-func (pi *PositionInteractor) Destroy(positionID int) (err error) {
+func (pi *PositionInteractor) Destroy(positionID string) (err error) {
 	err = pi.PositionRepository.DeleteByID(positionID)
 
 	return

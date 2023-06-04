@@ -10,9 +10,14 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-// NewSQLHandler returns connection and methos which is related to database handling.
-func NewMongoDBHandler() (*mongo.Client, error) {
-	client, err := mongo.NewClient(options.Client().ApplyURI(os.Getenv("NOSQL_DATABASE_URL")))
+// MongoDBHandler belong to the infrastructure layer.
+type MongoDBHandler struct {
+	*mongo.Client
+}
+
+// NewMongoDBHandler returns connection and methods which is related to database handling.
+func NewMongoDBHandler() (*MongoDBHandler, error) {
+	client, err := mongo.NewClient(options.Client().ApplyURI(os.Getenv("MONGO_DATABASE_URL")))
 
 	if err != nil {
 		log.Fatal(err)
@@ -24,6 +29,17 @@ func NewMongoDBHandler() (*mongo.Client, error) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	MongoDBHandler := MongoDBHandler{Client: client}
 
-	return client, nil
+	return &MongoDBHandler, nil
+}
+
+// MongoDatabase is Mongo Database wrapper
+func (mh *MongoDBHandler) MongoDatabase() *mongo.Database {
+	return mh.Client.Database(os.Getenv("MONGO_DATABASE_NAME"))
+}
+
+// Collection is Mongo Collection wrapper
+func (mh *MongoDBHandler) Collection(name string, opts ...*options.CollectionOptions) (collection *mongo.Collection) {
+	return mh.MongoDatabase().Collection(name, opts...)
 }

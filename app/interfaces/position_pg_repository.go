@@ -1,6 +1,7 @@
 package interfaces
 
 import (
+	"strconv"
 	"time"
 
 	"github.com/bmf-san/go-clean-architecture-web-application-boilerplate/app/domain"
@@ -58,7 +59,13 @@ func (pr *PositionPgRepository) FindAll() (positions domain.Positions, err error
 }
 
 // FindByID is returns the entity identified by the given id.
-func (pr *PositionPgRepository) FindByID(positionID int) (position domain.Position, err error) {
+func (pr *PositionPgRepository) FindByID(positionID string) (position domain.Position, err error) {
+	positionIDint, err := strconv.Atoi(positionID)
+
+	if err != nil {
+		return
+	}
+
 	const query = `
 		SELECT
 			id,
@@ -72,7 +79,7 @@ func (pr *PositionPgRepository) FindByID(positionID int) (position domain.Positi
 			id = $1
 	`
 
-	row, err := pr.SQLHandler.Query(query, positionID)
+	row, err := pr.SQLHandler.Query(query, positionIDint)
 
 	if err != nil {
 		return
@@ -122,7 +129,13 @@ func (pr *PositionPgRepository) Save(p domain.Position) (err error) {
 }
 
 // DeleteByID is deletes the entity identified by the given id.
-func (pr *PositionPgRepository) DeleteByID(positionID int) (err error) {
+func (pr *PositionPgRepository) DeleteByID(positionID string) (err error) {
+	positionIDint, err := strconv.Atoi(positionID)
+
+	if err != nil {
+		return
+	}
+
 	const query = `
 		DELETE
 		FROM
@@ -131,7 +144,7 @@ func (pr *PositionPgRepository) DeleteByID(positionID int) (err error) {
 			id = $1
 	`
 
-	_, err = pr.SQLHandler.Exec(query, positionID)
+	_, err = pr.SQLHandler.Exec(query, positionIDint)
 
 	if err != nil {
 		return
