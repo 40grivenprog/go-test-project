@@ -1,6 +1,7 @@
 package interfaces
 
 import (
+	"strconv"
 	"time"
 
 	"github.com/bmf-san/go-clean-architecture-web-application-boilerplate/app/domain"
@@ -12,7 +13,13 @@ type EmployeePgRepository struct {
 }
 
 // FindAllByPositionID returns all entities by position id.
-func (er *EmployeePgRepository) FindAllByPositionID(positionID int) (employees domain.Employees, err error) {
+func (er *EmployeePgRepository) FindAllByPositionID(positionID string) (employees domain.Employees, err error) {
+	positionIDInt, err := strconv.Atoi(positionID)
+
+	if err != nil {
+		return employees, err
+	}
+
 	const query = `
 	SELECT
 		id,
@@ -27,7 +34,7 @@ func (er *EmployeePgRepository) FindAllByPositionID(positionID int) (employees d
 	  position_id = $1
 	`
 
-	rows, err := er.SQLHandler.Query(query, positionID)
+	rows, err := er.SQLHandler.Query(query, positionIDInt)
 
 	if err != nil {
 		return
@@ -67,7 +74,13 @@ func (er *EmployeePgRepository) FindAllByPositionID(positionID int) (employees d
 }
 
 // FindByID returns the entity identified by the given id.
-func (er *EmployeePgRepository) FindByID(employeeID int) (employee domain.Employee, err error) {
+func (er *EmployeePgRepository) FindByID(employeeID string) (employee domain.Employee, err error) {
+	employeeIDInt, err := strconv.Atoi(employeeID)
+
+	if err != nil {
+		return employee, err
+	}
+
 	const query = `
 	SELECT
 		id,
@@ -81,7 +94,7 @@ func (er *EmployeePgRepository) FindByID(employeeID int) (employee domain.Employ
 	WHERE
 		id = $1
 	`
-	row, err := er.SQLHandler.Query(query, employeeID)
+	row, err := er.SQLHandler.Query(query, employeeIDInt)
 	if err != nil {
 		return
 	}
@@ -114,7 +127,13 @@ func (er *EmployeePgRepository) FindByID(employeeID int) (employee domain.Employ
 }
 
 // DeleteByID is deletes the entity identified by the given id.
-func (er *EmployeePgRepository) DeleteByID(employeeID int) (err error) {
+func (er *EmployeePgRepository) DeleteByID(employeeID string) (err error) {
+	employeeIDInt, err := strconv.Atoi(employeeID)
+
+	if err != nil {
+		return err
+	}
+
 	const query = `
 	DELETE
 	FROM
@@ -122,7 +141,7 @@ func (er *EmployeePgRepository) DeleteByID(employeeID int) (err error) {
 	WHERE
 	  id = $1
 	`
-	_, err = er.SQLHandler.Exec(query, employeeID)
+	_, err = er.SQLHandler.Exec(query, employeeIDInt)
 
 	if err != nil {
 		return
@@ -132,14 +151,14 @@ func (er *EmployeePgRepository) DeleteByID(employeeID int) (err error) {
 }
 
 // Save is saves the given entity
-func (er *EmployeePgRepository) Save(employee domain.Employee) (err error) {
+func (er *EmployeePgRepository) Save(e domain.Employee) (err error) {
 	const query = `
 	INSERT INTO
 		employees(first_name, last_name, position_id)
 	VALUES
 		($1, $2, $3)
 	`
-	_, err = er.SQLHandler.Exec(query, employee.FirstName, employee.LastName, employee.PositionID)
+	_, err = er.SQLHandler.Exec(query, e.FirstName, e.LastName, e.PositionID)
 
 	if err != nil {
 		return

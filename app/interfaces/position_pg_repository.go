@@ -63,7 +63,7 @@ func (pr *PositionPgRepository) FindByID(positionID string) (position domain.Pos
 	positionIDint, err := strconv.Atoi(positionID)
 
 	if err != nil {
-		return
+		return position, err
 	}
 
 	const query = `

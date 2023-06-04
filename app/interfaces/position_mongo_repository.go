@@ -9,6 +9,8 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+const positions_collection string = "positions"
+
 // A PositionMongoRepository belong to the inteface layer
 type PositionMongoRepository struct {
 	MongoDBHandler MongoDBHandler
@@ -16,8 +18,8 @@ type PositionMongoRepository struct {
 
 // FindAll is returns the number of entities.
 func (pr *PositionMongoRepository) FindAll() (positions domain.Positions, err error) {
-	positionsCollection := pr.MongoDBHandler.Collection("positions")
-	ctx, _ := context.WithTimeout(context.Background(), 10 * time.Second)
+	positionsCollection := pr.MongoDBHandler.Collection(positions_collection)
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 	cursor, err := positionsCollection.Find(context.TODO(), bson.M{})
 
 	if err != nil {
@@ -41,7 +43,7 @@ func (pr *PositionMongoRepository) FindByID(positionID string) (position domain.
 		return
 	}
 
-	result := pr.MongoDBHandler.Collection("positions").FindOne(context.Background(), bson.M{"_id": objectID})
+	result := pr.MongoDBHandler.Collection(positions_collection).FindOne(context.Background(), bson.M{"_id": objectID})
 
 	result.Decode(&position)
 
@@ -50,7 +52,7 @@ func (pr *PositionMongoRepository) FindByID(positionID string) (position domain.
 
 // Save is saves the given entity
 func (pr *PositionMongoRepository) Save(p domain.Position) (err error) {
-	positionsCollection := pr.MongoDBHandler.Collection("positions")
+	positionsCollection := pr.MongoDBHandler.Collection(positions_collection)
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 	currentTimestamp := time.Now()
 
@@ -76,8 +78,8 @@ func (pr *PositionMongoRepository) DeleteByID(positionID string) (err error) {
 		return
 	}
 
-	_, err = pr.MongoDBHandler.Collection("positions").DeleteOne(context.Background(), bson.M{"_id": objectID})
-	
+	_, err = pr.MongoDBHandler.Collection(positions_collection).DeleteOne(context.Background(), bson.M{"_id": objectID})
+
 	if err != nil {
 		return
 	}

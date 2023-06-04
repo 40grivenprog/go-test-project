@@ -6,8 +6,8 @@ import (
 
 // A EmployeeRepository belong to the usecases layer.
 type EmployeeRepository interface {
-	FindAllByPositionID(positionID int) (domain.Employees, error)
-	FindByID(employeeID int) (domain.Employee, error)
-	DeleteByID(employeeID int) error
-	Save(employee domain.Employee) error
+	FindAllByPositionID(positionID string) (domain.Employees, error)
+	FindByID(employeeID string) (domain.Employee, error)
+	DeleteByID(employeeID string) error
+	Save(e domain.Employee) error
 }

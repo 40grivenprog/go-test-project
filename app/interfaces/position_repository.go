@@ -7,7 +7,7 @@ import (
 // A PositionRepository belong to the usecases layer.
 type PositionRepository interface {
 	FindAll() (domain.Positions, error)
-	FindByID(string) (domain.Position, error)
-	Save(domain.Position) error
-	DeleteByID(string) error
+	FindByID(positionID string) (domain.Position, error)
+	Save(p domain.Position) error
+	DeleteByID(positionID string) error
 }

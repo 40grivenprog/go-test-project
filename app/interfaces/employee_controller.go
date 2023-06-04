@@ -2,7 +2,6 @@ package interfaces
 
 import (
 	"net/http"
-	"strconv"
 
 	"github.com/bmf-san/go-clean-architecture-web-application-boilerplate/app/domain"
 	"github.com/bmf-san/go-clean-architecture-web-application-boilerplate/app/usecases"
@@ -18,11 +17,17 @@ type EmployeeController struct {
 // NewEmployeeController returns the resource of Employees.
 func NewEmployeeController(dbHandler interface{}, logger usecases.Logger) *EmployeeController {
 	var employeeRepository EmployeeRepository
-	sqlHandler, ok := dbHandler.(SQLHandler)
 
-	if ok {
+	switch dbHandler.(type) {
+	case SQLHandler:
+		sqlHandler, _ := dbHandler.(SQLHandler)
 		employeeRepository = &EmployeePgRepository{
 			SQLHandler: sqlHandler,
+		}
+	case MongoDBHandler:
+		mongoDbHandler, _ := dbHandler.(MongoDBHandler)
+		employeeRepository = &EmployeeMongoRepository{
+			MongoDBHandler: mongoDbHandler,
 		}
 	}
 
@@ -36,9 +41,7 @@ func NewEmployeeController(dbHandler interface{}, logger usecases.Logger) *Emplo
 
 // Index is display a listing of the resource.
 func (ec *EmployeeController) Index(c *gin.Context) {
-	positionID, _ := strconv.Atoi(c.Param("position_id"))
-
-	employees, err := ec.EmployeeInteractor.Index(positionID)
+	employees, err := ec.EmployeeInteractor.Index(c.Param("position_id"))
 
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
@@ -69,10 +72,7 @@ func (ec *EmployeeController) Store(c *gin.Context) {
 
 // Show return response which contain the specified resource of a employee
 func (ec *EmployeeController) Show(c *gin.Context) {
-
-	employeeID, _ := strconv.Atoi(c.Param("id"))
-
-	employee, err := ec.EmployeeInteractor.Show(employeeID)
+	employee, err := ec.EmployeeInteractor.Show(c.Param("id"))
 
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
@@ -84,9 +84,7 @@ func (ec *EmployeeController) Show(c *gin.Context) {
 
 // Destroy is remove the specified resource from storage.
 func (ec *EmployeeController) Destroy(c *gin.Context) {
-	employeeID, _ := strconv.Atoi(c.Param("id"))
-
-	err := ec.EmployeeInteractor.Destroy(employeeID)
+	err := ec.EmployeeInteractor.Destroy(c.Param("id"))
 
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
