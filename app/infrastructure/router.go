@@ -10,23 +10,34 @@ import (
 )
 
 // Dispatch is handle routing
-func Dispatch(logger usecases.Logger, dbHandler interface {}) {
+func Dispatch(logger usecases.Logger, dbHandler interface{}) {
 	positionController := interfaces.NewPositionController(dbHandler, logger)
 	employeesController := interfaces.NewEmployeeController(dbHandler, logger)
+	usersController := interfaces.NewUserController(dbHandler, logger)
 
 	r := gin.Default()
-	r.Use(CorrelationIDGenerator())
-	r.Use(ErrorHandler(logger))
 
-	r.GET("/positions", positionController.Index)
-	r.GET("/positions/:id", positionController.Show)
-	r.POST("/positions", positionController.Store)
-	r.DELETE("/positions/:id", positionController.Destroy)
+	public := r.Group("/api")
+	protected := r.Group("/api/admin")
 
-	r.GET("/position/:position_id/employees", employeesController.Index)
-	r.GET("/employees/:id", employeesController.Show)
-	r.POST("/employees", employeesController.Store)
-	r.DELETE("/employees/:id", employeesController.Destroy)
+	public.Use(CorrelationIDGenerator())
+	public.Use(ErrorHandler(logger))
+	protected.Use(CorrelationIDGenerator())
+	protected.Use(ErrorHandler(logger))
+	protected.Use(JwtAuthMiddleware())
+
+	public.POST("/register", usersController.Register)
+	public.POST("/login", usersController.Login)
+
+	protected.GET("/positions", positionController.Index)
+	protected.GET("/positions/:id", positionController.Show)
+	protected.POST("/positions", positionController.Store)
+	protected.DELETE("/positions/:id", positionController.Destroy)
+
+	protected.GET("/position/:position_id/employees", employeesController.Index)
+	protected.GET("/employees/:id", employeesController.Show)
+	protected.POST("/employees", employeesController.Store)
+	protected.DELETE("/employees/:id", employeesController.Destroy)
 
 	r.Run(fmt.Sprintf("%s:%s", os.Getenv("SERVER_HOST"), os.Getenv("SERVER_PORT")))
 }

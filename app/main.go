@@ -26,6 +26,8 @@ func main() {
 		dbHandler, err = infrastructure.NewSQLHandler()
 	} else if os.Getenv("DB_DRIVER") == Mongo {
 		dbHandler, err = infrastructure.NewMongoDBHandler()
+	} else {
+		panic("Invalid db driver")
 	}
 
 	if err != nil {
