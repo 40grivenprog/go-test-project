@@ -1,6 +1,7 @@
 package interfaces
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/bmf-san/go-clean-architecture-web-application-boilerplate/app/domain"
@@ -40,6 +41,8 @@ func NewPositionController(dbHandler interface{}, logger usecases.Logger) *Posit
 
 // Index return response which contain a listing of the resource of Positions.
 func (pc *PositionController) Index(c *gin.Context) {
+	fmt.Println(c.Get("userID"))
+
 	positions, err := pc.PositionInteractor.Index()
 
 	if err != nil {
