@@ -9,5 +9,5 @@ type EmployeeRepository interface {
 	FindAllByPositionID(positionID string) (domain.Employees, error)
 	FindByID(employeeID string) (domain.Employee, error)
 	DeleteByID(employeeID string) error
-	Save(e domain.Employee) error
+	Save(domain.Employee) error
 }

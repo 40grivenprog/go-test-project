@@ -13,7 +13,6 @@ import (
 
 // GenerateToken generates new token
 func GenerateToken(userID interface{}) (string, error) {
-
 	tokenLifespan, err := strconv.Atoi(os.Getenv("TOKEN_HOUR_LIFESPAN"))
 
 	if err != nil {
