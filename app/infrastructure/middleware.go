@@ -37,5 +37,9 @@ func ErrorHandler(logger usecases.Logger) gin.HandlerFunc {
 		for _, ginErr := range c.Errors {
 			logger.LogError(ginErr.Error())
 		}
+
+		if len(c.Errors) > 0 {
+			c.JSON(c.Writer.Status(), c.Errors)
+		}
 	}
 }

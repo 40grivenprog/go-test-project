@@ -2,7 +2,6 @@ package interfaces
 
 import (
 	"net/http"
-	"strconv"
 
 	"github.com/bmf-san/go-clean-architecture-web-application-boilerplate/app/domain"
 	"github.com/bmf-san/go-clean-architecture-web-application-boilerplate/app/usecases"
@@ -16,12 +15,24 @@ type PositionController struct {
 }
 
 // NewPositionController returns the resource of Positions.
-func NewPositionController(sqlHandler SQLHandler, logger usecases.Logger) *PositionController {
+func NewPositionController(dbHandler interface{}, logger usecases.Logger) *PositionController {
+	var positionRepository PositionRepository
+	switch dbHandler.(type) {
+	case SQLHandler:
+		sqlHandler, _ := dbHandler.(SQLHandler)
+		positionRepository = &PositionPgRepository{
+			SQLHandler: sqlHandler,
+		}
+	case MongoDBHandler:
+		mongoDbHandler, _ := dbHandler.(MongoDBHandler)
+		positionRepository = &PositionMongoRepository{
+			MongoDBHandler: mongoDbHandler,
+		}
+	}
+
 	return &PositionController{
 		PositionInteractor: usecases.PositionInteractor{
-			PositionRepository: &PositionRepository{
-				SQLHandler: sqlHandler,
-			},
+			PositionRepository: positionRepository,
 		},
 		Logger: logger,
 	}
@@ -47,7 +58,6 @@ func (pc *PositionController) Store(c *gin.Context) {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
-
 	err := pc.PositionInteractor.Store(p)
 
 	if err != nil {
@@ -58,34 +68,24 @@ func (pc *PositionController) Store(c *gin.Context) {
 	c.Redirect(http.StatusSeeOther, "/positions")
 }
 
-// Show return response which contain the specified resource of a Position.
+// Show returns the response containing the specified resource of a Position.
 func (pc *PositionController) Show(c *gin.Context) {
-
-	positionID, err := strconv.Atoi(c.Param("id"))
+	position, err := pc.PositionInteractor.Show(c.Param("id"))
 
 	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
+		c.AbortWithError(CalculateResponseErrorStatus(err), err)
 		return
 	}
 
-	position, err := pc.PositionInteractor.Show(positionID)
-
-	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
-		return
-	}
-
-	c.IndentedJSON(http.StatusOK, position)
+	c.JSON(http.StatusOK, position)
 }
 
 // Destroy is remove the specified resource from storage.
 func (pc *PositionController) Destroy(c *gin.Context) {
-	positionID, _ := strconv.Atoi(c.Param("id"))
-
-	err := pc.PositionInteractor.Destroy(positionID)
+	err := pc.PositionInteractor.Destroy(c.Param("id"))
 
 	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
+		c.AbortWithError(CalculateResponseErrorStatus(err), err)
 		return
 	}
 

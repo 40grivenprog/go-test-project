@@ -10,7 +10,7 @@ type EmployeeInteractor struct {
 }
 
 // Index is display a listing of the resource.
-func (ei *EmployeeInteractor) Index(positionID int) (employees domain.Employees, err error) {
+func (ei *EmployeeInteractor) Index(positionID string) (employees domain.Employees, err error) {
 	employees, err = ei.EmployeeRepository.FindAllByPositionID(positionID)
 
 	return
@@ -24,14 +24,14 @@ func (ei *EmployeeInteractor) Store(employee domain.Employee) (err error) {
 }
 
 // Show is display the specified resource.
-func (ei *EmployeeInteractor) Show(employeeID int) (employee domain.Employee, err error) {
+func (ei *EmployeeInteractor) Show(employeeID string) (employee domain.Employee, err error) {
 	employee, err = ei.EmployeeRepository.FindByID(employeeID)
 
 	return
 }
 
 // Destroy is remove the specified resource from storage.
-func (ei *EmployeeInteractor) Destroy(employeeID int) (err error) {
+func (ei *EmployeeInteractor) Destroy(employeeID string) (err error) {
 	err = ei.EmployeeRepository.DeleteByID(employeeID)
 
 	return

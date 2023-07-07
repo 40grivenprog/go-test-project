@@ -10,9 +10,9 @@ import (
 )
 
 // Dispatch is handle routing
-func Dispatch(logger usecases.Logger, sqlHandler interfaces.SQLHandler) {
-	positionController := interfaces.NewPositionController(sqlHandler, logger)
-	employeesController := interfaces.NewEmployeeController(sqlHandler, logger)
+func Dispatch(logger usecases.Logger, dbHandler interface {}) {
+	positionController := interfaces.NewPositionController(dbHandler, logger)
+	employeesController := interfaces.NewEmployeeController(dbHandler, logger)
 
 	r := gin.Default()
 	r.Use(CorrelationIDGenerator())
