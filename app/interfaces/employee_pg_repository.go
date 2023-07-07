@@ -102,6 +102,7 @@ func (er *EmployeePgRepository) FindByID(employeeID string) (employee domain.Emp
 		id = $1
 	`
 	row, err := er.SQLHandler.Query(query, employeeIDInt)
+	
 	if err != nil {
 		return
 	}
