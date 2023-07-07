@@ -55,9 +55,10 @@ func (pc *PositionController) Store(c *gin.Context) {
 	p := domain.Position{}
 
 	if err := c.BindJSON(&p); err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
+		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
+
 	err := pc.PositionInteractor.Store(p)
 
 	if err != nil {

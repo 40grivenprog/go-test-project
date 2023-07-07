@@ -56,7 +56,7 @@ func (ec *EmployeeController) Store(c *gin.Context) {
 	employee := domain.Employee{}
 
 	if err := c.BindJSON(&employee); err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
+		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
 
