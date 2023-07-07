@@ -33,7 +33,7 @@ func (pr *PositionPgRepository) FindAll() (positions domain.Positions, err error
 	defer rows.Close()
 
 	for rows.Next() {
-		var id int
+		var id string
 		var name string
 		var salary int
 		var updatedAt time.Time
@@ -92,7 +92,7 @@ func (pr *PositionPgRepository) FindByID(positionID string) (position domain.Pos
 		return
 	}
 
-	var id int
+	var id string
 	var name string
 	var salary int
 	var updatedAt time.Time

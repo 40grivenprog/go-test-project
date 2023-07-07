@@ -28,10 +28,12 @@ type Row struct {
 	Rows *sql.Rows
 }
 
+const PgxDriver = "pgx"
+
 // NewSQLHandler returns connection and methos which is related to database handling.
 func NewSQLHandler() (interfaces.SQLHandler, error) {
 	sqlHandler := &SQLHandler{}
-	conn, err := sql.Open(os.Getenv("DB_DRIVER"), os.Getenv("SQL_DATABASE_URL"))
+	conn, err := sql.Open(PgxDriver, os.Getenv("SQL_DATABASE_URL"))
 	if err != nil {
 		return nil, err
 	}

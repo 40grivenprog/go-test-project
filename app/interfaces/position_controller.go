@@ -15,21 +15,7 @@ type PositionController struct {
 }
 
 // NewPositionController returns the resource of Positions.
-func NewPositionController(dbHandler interface{}, logger usecases.Logger) *PositionController {
-	var positionRepository PositionRepository
-	switch dbHandler.(type) {
-	case SQLHandler:
-		sqlHandler, _ := dbHandler.(SQLHandler)
-		positionRepository = &PositionPgRepository{
-			SQLHandler: sqlHandler,
-		}
-	case MongoDBHandler:
-		mongoDbHandler, _ := dbHandler.(MongoDBHandler)
-		positionRepository = &PositionMongoRepository{
-			MongoDBHandler: mongoDbHandler,
-		}
-	}
-
+func NewPositionController(positionRepository PositionRepository, logger usecases.Logger) *PositionController {
 	return &PositionController{
 		PositionInteractor: usecases.PositionInteractor{
 			PositionRepository: positionRepository,

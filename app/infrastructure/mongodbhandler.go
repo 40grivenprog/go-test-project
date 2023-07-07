@@ -15,6 +15,8 @@ type MongoDBHandler struct {
 	*mongo.Client
 }
 
+const MongoDriver = "mongo"
+
 // NewMongoDBHandler returns connection and methods which is related to database handling.
 func NewMongoDBHandler() (*MongoDBHandler, error) {
 	client, err := mongo.NewClient(options.Client().ApplyURI(os.Getenv("MONGO_DATABASE_URL")))

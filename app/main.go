@@ -1,8 +1,6 @@
 package main
 
 import (
-	"os"
-
 	"github.com/bmf-san/go-clean-architecture-web-application-boilerplate/app/infrastructure"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
@@ -19,18 +17,11 @@ func main() {
 
 	infrastructure.Load(logger)
 
-	var dbHandler interface{}
 	var err error
-
-	if os.Getenv("DB_DRIVER") == Pgx {
-		dbHandler, err = infrastructure.NewSQLHandler()
-	} else if os.Getenv("DB_DRIVER") == Mongo {
-		dbHandler, err = infrastructure.NewMongoDBHandler()
-	}
 
 	if err != nil {
 		logger.LogError("%s", err)
 	}
 
-	infrastructure.Dispatch(logger, dbHandler)
+	infrastructure.Dispatch(logger)
 }
