@@ -15,7 +15,6 @@ const Pgx string = "pgx"
 const Mongo string = "mongo"
 
 func main() {
-
 	logger := infrastructure.NewLogger()
 
 	infrastructure.Load(logger)
