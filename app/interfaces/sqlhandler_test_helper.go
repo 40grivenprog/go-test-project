@@ -16,14 +16,14 @@ import (
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
-// MockSQlHandler is mock for SQLHandler
-type MockSQlHandler struct {
+// MockSQLHandler is mock for SQLHandler
+type MockSQLHandler struct {
 	Conn *sql.DB
 	SQLHandler
 }
 
 // Query mocks Query method
-func (s *MockSQlHandler) Query(query string, args ...interface{}) (Row, error) {
+func (s *MockSQLHandler) Query(query string, args ...interface{}) (Row, error) {
 	rows, err := s.Conn.Query(query, args...)
 
 	if err != nil {
@@ -37,7 +37,7 @@ func (s *MockSQlHandler) Query(query string, args ...interface{}) (Row, error) {
 }
 
 // Exec mocks Exec method
-func (s *MockSQlHandler) Exec(query string, args ...interface{}) (Result, error) {
+func (s *MockSQLHandler) Exec(query string, args ...interface{}) (Result, error) {
 	result, err := s.Conn.Exec(query, args...)
 
 	if err != nil {

@@ -25,7 +25,6 @@ func (m *MockUserRepository) Save(u domain.User) (err error) {
 	return
 }
 
-// TestUserInteractorStore performs a unit test for the UserInteractor Store method
 func TestUserInteractorStore(t *testing.T) {
 	assert := assert.New(t)
 	mockUserRepository := new(MockUserRepository)
@@ -62,7 +61,6 @@ func (m *MockUserRepository) FindByEmail(email string) (domain.User, error) {
 	return resultUser, args.Error(1)
 }
 
-// TestUserInteractorLoginCheck performs a unit test for the UserInteractor LoginCheck method
 func TestUserInteractorLoginCheck(t *testing.T) {
 	assert := assert.New(t)
 	mockUserRepository := new(MockUserRepository)

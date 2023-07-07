@@ -155,5 +155,3 @@ func (pr *PositionPgRepository) DeleteByID(positionID string) (err error) {
 
 	return
 }
-
-

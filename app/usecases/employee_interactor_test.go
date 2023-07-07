@@ -80,7 +80,6 @@ func (m *MockEmployeeRepository) FindByID(employeeID string) (domain.Employee, e
 	return employeeResult, args.Error(1)
 }
 
-// TestEmployeeInteractorShow performs a unit test for the EmployeeInteractor Show method
 func TestEmployeeInteractorShow(t *testing.T) {
 	assert := assert.New(t)
 	mockEmployeeRepository := new(MockEmployeeRepository)
@@ -120,7 +119,6 @@ func (m *MockEmployeeRepository) DeleteByID(employeeID string) error {
 	return args.Error(0)
 }
 
-// TestEmployeeInteractorDestroy performs a unit test for the EmployeeInteractor Destroy method
 func TestEmployeeInteractorDestroy(t *testing.T) {
 	assert := assert.New(t)
 	mockEmployeeRepository := new(MockEmployeeRepository)
@@ -154,7 +152,6 @@ func (m *MockEmployeeRepository) Save(employee domain.Employee) error {
 	return args.Error(0)
 }
 
-// TestEmployeeInteractorStore performs a unit test for the EmployeeInteractor Store method
 func TestEmployeeInteractorStore(t *testing.T) {
 	assert := assert.New(t)
 	mockEmployeeRepository := new(MockEmployeeRepository)

@@ -10,7 +10,7 @@ import (
 	"github.com/bmf-san/go-clean-architecture-web-application-boilerplate/app/domain"
 )
 
-// MockEmployeeRepository is a mock implementation of the EmployeeRepository interface.
+// MockPositionRepository is a mock implementation of the PositionRepository interface.
 type MockPositionRepository struct {
 	mock.Mock
 }
@@ -28,7 +28,6 @@ func (m *MockPositionRepository) FindAll() (domain.Positions, error) {
 	return resultPositions, args.Error(1)
 }
 
-// TestPositionInteractorIndex performs a unit test for the PositionInteractor Index method
 func TestPositionInteractorIndex(t *testing.T) {
 	mockPositionRepository := new(MockPositionRepository)
 
@@ -63,7 +62,6 @@ func (m *MockPositionRepository) FindByID(positionID string) (domain.Position, e
 	return resultPosition, args.Error(1)
 }
 
-// TestPositionInteractorShow performs a unit test for the PositionInteractor Show method
 func TestPositionInteractorShow(t *testing.T) {
 	assert := assert.New(t)
 	mockPositionRepository := new(MockPositionRepository)
@@ -102,7 +100,6 @@ func (m *MockPositionRepository) Save(position domain.Position) error {
 	return args.Error(0)
 }
 
-// TestPositionInteractorStore performs a unit test for the PositionInteractor Store method
 func TestPositionInteractorStore(t *testing.T) {
 	assert := assert.New(t)
 	mockPositionRepository := new(MockPositionRepository)
@@ -132,7 +129,6 @@ func (m *MockPositionRepository) DeleteByID(positionID string) error {
 	return args.Error(0)
 }
 
-// TestPositionInteractorDestroy performs a unit test for the PositionInteractor Destroy method
 func TestPositionInteractorDestroy(t *testing.T) {
 	assert := assert.New(t)
 	mockPositionRepository := new(MockPositionRepository)

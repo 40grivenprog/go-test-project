@@ -8,7 +8,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// TestPositionPgRepositoryFindAll performs an integration test for the TestPositionPgRepository FindAll method
 func TestPositionPgRepositoryFindAll(t *testing.T) {
 	t.Parallel()
 	db, cleanup := createTestDatabase(t)
@@ -16,9 +15,9 @@ func TestPositionPgRepositoryFindAll(t *testing.T) {
 
 	loadTestData(t, db, "find_all_positions")
 
-	mockSQlHandler := MockSQlHandler{Conn: db}
+	mockSQLHandler := MockSQLHandler{Conn: db}
 	positionPgRepository := PositionPgRepository{
-		SQLHandler: &mockSQlHandler,
+		SQLHandler: &mockSQLHandler,
 	}
 
 	positions, err := positionPgRepository.FindAll()
@@ -27,7 +26,6 @@ func TestPositionPgRepositoryFindAll(t *testing.T) {
 	assert.Equal(t, len(positions), 2)
 }
 
-// TestPositionPgRepositoryFindById performs an integration test for the TestPositionPgRepository FindById method
 func TestPositionPgRepositoryFindById(t *testing.T) {
 	t.Parallel()
 	assert := assert.New(t)
@@ -36,9 +34,9 @@ func TestPositionPgRepositoryFindById(t *testing.T) {
 
 	loadTestData(t, db, "find_by_id_position")
 
-	mockSQlHandler := MockSQlHandler{Conn: db}
+	mockSQLHandler := MockSQLHandler{Conn: db}
 	positionPgRepository := PositionPgRepository{
-		SQLHandler: &mockSQlHandler,
+		SQLHandler: &mockSQLHandler,
 	}
 
 	position, err := positionPgRepository.FindByID("1")
@@ -60,7 +58,6 @@ func TestPositionPgRepositoryFindById(t *testing.T) {
 	assert.Empty(position)
 }
 
-// TestPositionPgRepositoryDeleteByID performs an integration test for the TestPositionPgRepository DeketeById method
 func TestPositionPgRepositoryDeleteByID(t *testing.T) {
 	t.Parallel()
 	assert := assert.New(t)
@@ -69,9 +66,9 @@ func TestPositionPgRepositoryDeleteByID(t *testing.T) {
 
 	loadTestData(t, db, "delete_by_id_position")
 
-	mockSQlHandler := MockSQlHandler{Conn: db}
+	mockSQLHandler := MockSQLHandler{Conn: db}
 	positionPgRepository := PositionPgRepository{
-		SQLHandler: &mockSQlHandler,
+		SQLHandler: &mockSQLHandler,
 	}
 
 	err := positionPgRepository.DeleteByID("1")
@@ -90,7 +87,6 @@ func TestPositionPgRepositoryDeleteByID(t *testing.T) {
 	}
 }
 
-// TestPositionPgRepositorySave performs an integration test for the TestPositionPgRepository Save method
 func TestPositionPgRepositorySave(t *testing.T) {
 	t.Parallel()
 	assert := assert.New(t)
@@ -99,9 +95,9 @@ func TestPositionPgRepositorySave(t *testing.T) {
 
 	loadTestData(t, db, "save_position")
 
-	mockSQlHandler := MockSQlHandler{Conn: db}
+	mockSQLHandler := MockSQLHandler{Conn: db}
 	positionPgRepository := PositionPgRepository{
-		SQLHandler: &mockSQlHandler,
+		SQLHandler: &mockSQLHandler,
 	}
 
 	position := domain.Position{Name: "Ruby", Salary: 200}
