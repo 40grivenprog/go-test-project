@@ -15,22 +15,7 @@ type EmployeeController struct {
 }
 
 // NewEmployeeController returns the resource of Employees.
-func NewEmployeeController(dbHandler interface{}, logger usecases.Logger) *EmployeeController {
-	var employeeRepository EmployeeRepository
-
-	switch dbHandler.(type) {
-	case SQLHandler:
-		sqlHandler, _ := dbHandler.(SQLHandler)
-		employeeRepository = &EmployeePgRepository{
-			SQLHandler: sqlHandler,
-		}
-	case MongoDBHandler:
-		mongoDbHandler, _ := dbHandler.(MongoDBHandler)
-		employeeRepository = &EmployeeMongoRepository{
-			MongoDBHandler: mongoDbHandler,
-		}
-	}
-
+func NewEmployeeController(employeeRepository EmployeeRepository, logger usecases.Logger) *EmployeeController {
 	return &EmployeeController{
 		EmployeeInteractor: usecases.EmployeeInteractor{
 			EmployeeRepository: employeeRepository,

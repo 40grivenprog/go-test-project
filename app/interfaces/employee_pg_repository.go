@@ -49,10 +49,10 @@ func (er *EmployeePgRepository) FindAllByPositionID(positionID string) (employee
 	defer rows.Close()
 
 	for rows.Next() {
-		var id int
+		var id string
 		var firstName string
 		var lastName string
-		var positionID int
+		var positionID string
 		var updatedAt time.Time
 		var createdAt time.Time
 
@@ -102,6 +102,7 @@ func (er *EmployeePgRepository) FindByID(employeeID string) (employee domain.Emp
 		id = $1
 	`
 	row, err := er.SQLHandler.Query(query, employeeIDInt)
+	
 	if err != nil {
 		return
 	}
@@ -113,10 +114,10 @@ func (er *EmployeePgRepository) FindByID(employeeID string) (employee domain.Emp
 
 	defer row.Close()
 
-	var id int
+	var id string
 	var firstName string
 	var lastName string
-	var positionID int
+	var positionID string
 	var updatedAt time.Time
 	var createdAt time.Time
 

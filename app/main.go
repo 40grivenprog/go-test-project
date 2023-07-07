@@ -1,7 +1,10 @@
 package main
 
 import (
+	"context"
 	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/bmf-san/go-clean-architecture-web-application-boilerplate/app/infrastructure"
 
@@ -19,18 +22,27 @@ func main() {
 
 	infrastructure.Load(logger)
 
-	var dbHandler interface{}
 	var err error
-
-	if os.Getenv("DB_DRIVER") == Pgx {
-		dbHandler, err = infrastructure.NewSQLHandler()
-	} else if os.Getenv("DB_DRIVER") == Mongo {
-		dbHandler, err = infrastructure.NewMongoDBHandler()
-	}
 
 	if err != nil {
 		logger.LogError("%s", err)
 	}
 
-	infrastructure.Dispatch(logger, dbHandler)
+	infrastructure.Dispatch(logger)
+}
+
+
+func createCtrlCContext() context.Context {
+  ctx, cancel := context.WithCancel(context.Background())
+  go func() {
+    sigChan := make(chan os.Signal, 1)
+
+    signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM, syscall.SIGHUP, syscall.SIGQUIT)
+    
+		<-sigChan
+    
+		cancel()
+  }()
+
+  return ctx
 }

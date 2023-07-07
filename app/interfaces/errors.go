@@ -1,6 +1,7 @@
 package interfaces
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -52,7 +53,11 @@ func CalculateResponseErrorStatus(err error) (status int) {
 }
 
 func calculatePGErrorStatus(err error) (status int) {
-	pgError, _ := err.(*pgconn.PgError)
+	pgError, ok := err.(*pgconn.PgError)
+	if !ok {
+		return http.StatusInternalServerError
+	}
+
 	status = http.StatusInternalServerError
 	
 	if pgError.Code == "23503" {

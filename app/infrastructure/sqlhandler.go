@@ -2,7 +2,6 @@ package infrastructure
 
 import (
 	"database/sql"
-	"fmt"
 	"os"
 
 	"github.com/bmf-san/go-clean-architecture-web-application-boilerplate/app/interfaces"
@@ -28,15 +27,17 @@ type Row struct {
 	Rows *sql.Rows
 }
 
+const PgxDriver = "pgx"
+
 // NewSQLHandler returns connection and methos which is related to database handling.
 func NewSQLHandler() (interfaces.SQLHandler, error) {
 	sqlHandler := &SQLHandler{}
-	conn, err := sql.Open(os.Getenv("DB_DRIVER"), os.Getenv("SQL_DATABASE_URL"))
+	conn, err := sql.Open(PgxDriver, os.Getenv("SQL_DATABASE_URL"))
 	if err != nil {
 		return nil, err
 	}
 	err = conn.Ping()
-	fmt.Println("Connected")
+
 	if err != nil {
 		return nil, err
 	}

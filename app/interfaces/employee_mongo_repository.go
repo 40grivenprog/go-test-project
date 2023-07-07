@@ -91,17 +91,10 @@ func (er *EmployeeMongoRepository) DeleteByID(employeeID string) (err error) {
 
 // Save is saves the given entity
 func (er *EmployeeMongoRepository) Save(e domain.Employee) (err error) {
-	positionIDStr, ok := e.PositionID.(string)
-
-	if !ok {
-		err = NewBadRequestError("employee position", e.PositionID)
-		return
-	}
-
-	positionIDHex, err := primitive.ObjectIDFromHex(positionIDStr)
+	positionIDHex, err := primitive.ObjectIDFromHex(e.PositionID)
 
 	if err != nil {
-		err = NewBadRequestError("employee position", positionIDStr)
+		err = NewBadRequestError("employee position", e.PositionID)
 		return
 	}
 
