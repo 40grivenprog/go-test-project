@@ -31,6 +31,7 @@ func NewMongoDBHandler() (*MongoDBHandler, error) {
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	MongoDBHandler := MongoDBHandler{Client: client}
 
 	return &MongoDBHandler, nil

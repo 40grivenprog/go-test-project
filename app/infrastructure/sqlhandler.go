@@ -2,7 +2,6 @@ package infrastructure
 
 import (
 	"database/sql"
-	"fmt"
 	"os"
 
 	"github.com/bmf-san/go-clean-architecture-web-application-boilerplate/app/interfaces"
@@ -38,7 +37,7 @@ func NewSQLHandler() (interfaces.SQLHandler, error) {
 		return nil, err
 	}
 	err = conn.Ping()
-	fmt.Println("Connected")
+
 	if err != nil {
 		return nil, err
 	}
