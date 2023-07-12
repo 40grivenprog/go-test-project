@@ -1,6 +1,7 @@
 package interfaces
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/bmf-san/go-clean-architecture-web-application-boilerplate/app/domain"
@@ -67,7 +68,8 @@ func (ec *EmployeeController) Store(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(http.StatusSeeOther, "/positions")
+	redirectURL := fmt.Sprintf("/api/admin/positions?token=%s", c.Query("token"))
+	c.Redirect(http.StatusSeeOther, redirectURL)
 }
 
 // Show return response which contain the specified resource of a employee
@@ -91,5 +93,6 @@ func (ec *EmployeeController) Destroy(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(http.StatusSeeOther, "/positions")
+	redirectURL := fmt.Sprintf("/api/admin/positions?token=%s", c.Query("token"))
+	c.Redirect(http.StatusSeeOther, redirectURL)
 }

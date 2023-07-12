@@ -58,7 +58,8 @@ func (pc *PositionController) Store(c *gin.Context) {
 	p := domain.Position{}
 
 	if err := c.BindJSON(&p); err != nil {
-		c.AbortWithStatus(http.StatusInternalServerError)
+		fmt.Println(err)
+		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
 
@@ -69,7 +70,8 @@ func (pc *PositionController) Store(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(http.StatusSeeOther, "/positions")
+	redirectURL := fmt.Sprintf("/api/admin/positions?token=%s", c.Query("token"))
+	c.Redirect(http.StatusSeeOther, redirectURL)
 }
 
 // Show returns the response containing the specified resource of a Position.
@@ -93,5 +95,6 @@ func (pc *PositionController) Destroy(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(http.StatusSeeOther, "/positions")
+	redirectURL := fmt.Sprintf("/api/admin/positions?token=%s", c.Query("token"))
+	c.Redirect(http.StatusSeeOther, redirectURL)
 }
